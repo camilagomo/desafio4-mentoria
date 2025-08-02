@@ -21,7 +21,7 @@ Projeto completo desenvolvido com **API REST** para autenticação de usuários,
 
 ### 📸 Preview da Interface
 
-![Tela de Login - Loja da Leda LTDA](https://i.imgur.com/8XZqY3L.png)
+![Tela de Login - Loja da Leda LTDA](image.png)
 
 ### Testes Automatizados
 - ✅ Testes E2E com Cypress
