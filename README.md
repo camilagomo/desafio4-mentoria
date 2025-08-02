@@ -1,4 +1,4 @@
-# Sistema Completo de Autenticação com Interface Web e Testes Automatizados
+# Sistema com autenticação via Interface Web e Testes Automatizados com Cypress
 
 [![CI/CD Pipeline](https://github.com/camilamonteiro/desafio4-mentoria/workflows/CI%2FCD%20Pipeline/badge.svg)](https://github.com/camilamonteiro/desafio4-mentoria/actions)
 
