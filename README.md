@@ -1,6 +1,4 @@
-# Autenticação com Interface Web e Testes Automatizados com Cypress
-
-[![CI/CD Pipeline](https://github.com/camilamonteiro/desafio4-mentoria/workflows/CI%2FCD%20Pipeline/badge.svg)](https://github.com/camilamonteiro/desafio4-mentoria/actions)
+# Sistema com Interface Web e Testes Automatizados com Cypress
 
 Projeto completo desenvolvido com **API REST** para autenticação de usuários, **interface web moderna** e **testes automatizados com Cypress**. O sistema inclui controle de tentativas de login, bloqueio de conta, recuperação de senha e uma página web responsiva para interação com os endpoints.
 
