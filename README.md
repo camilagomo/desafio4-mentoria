@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 # Sistema com Interface Web e Testes Automatizados com Cypress
+=======
+# Sistema Interface Web e Testes Automatizados com Cypress
+>>>>>>> 8ecc871 (adiciona imagem do prototipo)
 
 Projeto completo desenvolvido com **API REST** para autenticação de usuários, **interface web moderna** e **testes automatizados com Cypress**. O sistema inclui controle de tentativas de login, bloqueio de conta, recuperação de senha e uma página web responsiva para interação com os endpoints.
 
@@ -121,7 +125,6 @@ npm run test:all
 #### 🔄 GitHub Actions
 O projeto inclui uma pipeline CI/CD completa que executa automaticamente:
 
-- ✅ **Testes em múltiplas versões do Node.js** (16.x, 18.x, 20.x)
 - ✅ **Testes de API com Mocha Awesome**
 - ✅ **Testes E2E com Cypress**
 - ✅ **Geração de relatórios HTML**
