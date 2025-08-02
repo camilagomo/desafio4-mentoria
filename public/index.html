@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Sistema de Autenticação</title>
+    
+    <!-- MaterializeCSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col s12 m8 l6 offset-m2 offset-l3">
+                <div class="card-panel login-container">
+                    <div class="login-header center-align">
+                        <h1 class="blue-text text-darken-2">
+                            <i class="material-icons large">lock</i> Login
+                        </h1>
+                        <p class="flow-text grey-text text-darken-1">Faça login para acessar o sistema</p>
+                        <div class="company-info">
+                            <h5 class="white-text">
+                                <i class="material-icons">store</i> Loja da Leda LTDA
+                            </h5>
+                        </div>
+                    </div>
+
+                    <form id="loginForm" class="login-form">
+                        <div class="row">
+                            <div class="input-field col s12">
+                                <i class="material-icons prefix">email</i>
+                                <input 
+                                    type="email" 
+                                    id="email" 
+                                    name="email" 
+                                    class="validate"
+                                    required
+                                >
+                                <label for="email">Email</label>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="input-field col s12">
+                                <i class="material-icons prefix">lock</i>
+                                <input 
+                                    type="password" 
+                                    id="password" 
+                                    name="password" 
+                                    class="validate"
+                                    required
+                                >
+                                <label for="password">Senha</label>
+                                <button type="button" class="btn-flat toggle-password" onclick="togglePassword()">
+                                    <i class="material-icons">visibility</i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col s12">
+                                <button type="submit" class="btn waves-effect waves-light blue darken-2 col s12">
+                                    <i class="material-icons left">login</i> Entrar
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col s12 center-align">
+                                <a href="#" onclick="showForgotPassword()" class="blue-text text-darken-2">
+                                    Esqueceu sua senha?
+                                </a>
+                                <br>
+                                <a href="#" onclick="showRegister()" class="blue-text text-darken-2">
+                                    Criar nova conta
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+
+            <!-- Modal de Recuperação de Senha -->
+            <div id="forgotPasswordModal" class="modal">
+                <div class="modal-content">
+                    <h4 class="blue-text text-darken-2">
+                        <i class="material-icons">vpn_key</i> Recuperar Senha
+                    </h4>
+                    <form id="forgotPasswordForm">
+                        <div class="row">
+                            <div class="input-field col s12">
+                                <i class="material-icons prefix">email</i>
+                                <input type="email" id="forgotEmail" class="validate" required>
+                                <label for="forgotEmail">Email</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col s12">
+                                <button type="submit" class="btn waves-effect waves-light blue darken-2 col s12">
+                                    <i class="material-icons left">send</i> Enviar Email
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Modal de Registro -->
+            <div id="registerModal" class="modal">
+                <div class="modal-content">
+                    <h4 class="blue-text text-darken-2">
+                        <i class="material-icons">person_add</i> Criar Conta
+                    </h4>
+                    <form id="registerForm">
+                        <div class="row">
+                            <div class="input-field col s12">
+                                <i class="material-icons prefix">person</i>
+                                <input type="text" id="registerName" class="validate" required>
+                                <label for="registerName">Nome</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="input-field col s12">
+                                <i class="material-icons prefix">email</i>
+                                <input type="email" id="registerEmail" class="validate" required>
+                                <label for="registerEmail">Email</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="input-field col s12">
+                                <i class="material-icons prefix">lock</i>
+                                <input type="password" id="registerPassword" class="validate" required>
+                                <label for="registerPassword">Senha</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col s12">
+                                <button type="submit" class="btn waves-effect waves-light blue darken-2 col s12">
+                                    <i class="material-icons left">person_add</i> Criar Conta
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Modal de Reset de Senha -->
+            <div id="resetPasswordModal" class="modal">
+                <div class="modal-content">
+                    <h4 class="blue-text text-darken-2">
+                        <i class="material-icons">lock_reset</i> Redefinir Senha
+                    </h4>
+                    <form id="resetPasswordForm">
+                        <div class="row">
+                            <div class="input-field col s12">
+                                <i class="material-icons prefix">email</i>
+                                <input type="email" id="resetEmail" class="validate" required>
+                                <label for="resetEmail">Email</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="input-field col s12">
+                                <i class="material-icons prefix">security</i>
+                                <input type="text" id="resetToken" class="validate" required>
+                                <label for="resetToken">Token</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="input-field col s12">
+                                <i class="material-icons prefix">lock</i>
+                                <input type="password" id="newPassword" class="validate" required>
+                                <label for="newPassword">Nova Senha</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col s12">
+                                <button type="submit" class="btn waves-effect waves-light blue darken-2 col s12">
+                                    <i class="material-icons left">lock_reset</i> Redefinir Senha
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Notificações -->
+        <div id="notification" class="notification"></div>
+    </div>
+
+    <!-- MaterializeCSS JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    
+    <!-- Custom JavaScript -->
+    <script src="js/app.js"></script>
+</body>
+</html> 

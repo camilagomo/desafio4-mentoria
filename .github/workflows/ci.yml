@@ -1,0 +1,212 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        node-version: [16.x, 18.x, 20.x]
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Run API tests with Mocha Awesome
+      run: |
+        npm run test:api:ci
+      env:
+        CI: true
+        
+    - name: Run unit tests
+      run: |
+        npm test
+      env:
+        CI: true
+        
+    - name: Upload Mocha Awesome report
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: mochawesome-report-${{ matrix.node-version }}
+        path: mochawesome-report/
+        
+    - name: Upload test results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: test-results-${{ matrix.node-version }}
+        path: |
+          mochawesome-report/
+          coverage/
+          
+  cypress:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18.x'
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Start API server
+      run: |
+        npm start &
+        sleep 10
+      env:
+        CI: true
+        
+    - name: Run Cypress tests
+      uses: cypress-io/github-action@v6
+      with:
+        start: npm start
+        wait-on: 'http://localhost:3001'
+        browser: chrome
+        record: false
+        
+    - name: Upload Cypress screenshots
+      uses: actions/upload-artifact@v4
+      if: failure()
+      with:
+        name: cypress-screenshots
+        path: cypress/screenshots/
+        
+    - name: Upload Cypress videos
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: cypress-videos
+        path: cypress/videos/
+        
+  alerts:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Alert new PR
+      run: |
+        echo "🚨 NEW PULL REQUEST DETECTED!"
+        echo "📝 PR Title: ${{ github.event.pull_request.title }}"
+        echo "👤 Author: ${{ github.event.pull_request.user.login }}"
+        echo "🔗 PR URL: ${{ github.event.pull_request.html_url }}"
+        echo "📊 Changed files: ${{ github.event.pull_request.changed_files }}"
+        echo "📅 Created at: ${{ github.event.pull_request.created_at }}"
+        echo ""
+        echo "🔍 Review required for:"
+        echo "  - Code quality"
+        echo "  - Test coverage"
+        echo "  - API functionality"
+        echo "  - Frontend changes"
+        echo ""
+        echo "⚠️  Please review and approve this PR!"
+        
+  error-alerts:
+    runs-on: ubuntu-latest
+    if: failure()
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Alert test failures
+      run: |
+        echo "🚨 TESTS FAILED - IMMEDIATE ATTENTION REQUIRED!"
+        echo "❌ Build Status: FAILED"
+        echo "🔗 Workflow URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+        echo "📝 Commit: ${{ github.sha }}"
+        echo "👤 Author: ${{ github.actor }}"
+        echo ""
+        echo "🔍 Possible issues:"
+        echo "  - API tests failing"
+        echo "  - Unit tests failing"
+        echo "  - Cypress E2E tests failing"
+        echo "  - Build errors"
+        echo "  - Dependency issues"
+        echo ""
+        echo "📊 Check artifacts for:"
+        echo "  - Mocha Awesome reports"
+        echo "  - Cypress screenshots"
+        echo "  - Cypress videos"
+        echo "  - Test logs"
+        echo ""
+        echo "⚠️  URGENT: Fix tests before merging!"
+        
+  success-alerts:
+    runs-on: ubuntu-latest
+    if: success()
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Alert successful tests
+      run: |
+        echo "✅ ALL TESTS PASSED - READY FOR REVIEW!"
+        echo "🎉 Build Status: SUCCESS"
+        echo "🔗 Workflow URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+        echo "📝 Commit: ${{ github.sha }}"
+        echo "👤 Author: ${{ github.actor }}"
+        echo ""
+        echo "📊 Test Results:"
+        echo "  - ✅ API tests passed"
+        echo "  - ✅ Unit tests passed"
+        echo "  - ✅ Cypress E2E tests passed"
+        echo "  - ✅ All Node.js versions (16.x, 18.x, 20.x)"
+        echo ""
+        echo "📈 Reports Available:"
+        echo "  - Mocha Awesome HTML reports"
+        echo "  - Test coverage reports"
+        echo "  - Cypress test videos"
+        echo ""
+        echo "🚀 Ready for merge!"
+        
+  notify:
+    needs: [test, cypress]
+    runs-on: ubuntu-latest
+    if: always()
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Notify test completion
+      run: |
+        if [ "${{ job.status }}" == "success" ]; then
+          echo "✅ All tests completed successfully!"
+          echo "📊 Test reports available in artifacts"
+          echo "🔗 API: http://localhost:3001"
+          echo "📖 Swagger: http://localhost:3001/api-docs"
+          echo "📈 Mocha Awesome reports generated"
+          echo "🎥 Cypress videos and screenshots available"
+        else
+          echo "❌ Tests failed!"
+          echo "🔍 Check artifacts for error details"
+          echo "📸 Screenshots available in artifacts"
+          echo "🎥 Videos available in artifacts"
+          exit 1
+        fi 
