@@ -1,9 +1,4 @@
-<<<<<<< HEAD
-# Sistema com Interface Web e Testes Automatizados com Cypress
-=======
 # Sistema Interface Web e Testes Automatizados com Cypress
->>>>>>> 8ecc871 (adiciona imagem do prototipo)
-
 Projeto completo desenvolvido com **API REST** para autenticação de usuários, **interface web moderna** e **testes automatizados com Cypress**. O sistema inclui controle de tentativas de login, bloqueio de conta, recuperação de senha e uma página web responsiva para interação com os endpoints.
 
 ## 🚀 Funcionalidades
@@ -25,7 +20,7 @@ Projeto completo desenvolvido com **API REST** para autenticação de usuários,
 
 ### 📸 Preview da Interface
 
-![Tela de Login - Loja da Leda LTDA](image.png)
+![Tela de Login - Loja da Leda LTDA](img/image.png)
 
 ### Testes Automatizados
 - ✅ Testes E2E com Cypress
