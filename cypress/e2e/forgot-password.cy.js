@@ -1,12 +1,16 @@
-describe('Forgot Password Modal', () => {
-  beforeEach(() => {
-    cy.visit('/')
-    cy.get('.forgot-password').click()
+describe('Recuperação de senha', () => {
+  it('Modal para recuperação de senha', () => {
+    cy.visit('http://localhost:3001/#')
+
+    cy.get('[onclick="showForgotPassword()"]').click()
+    cy.get('label[for="forgotEmail"]').click().type('reginaldo@exemplo.com')
+        cy.contains('button', 'Enviar Email').click()
   })
+
 
   // Testes serão implementados manualmente
 })
-
+/*
 describe('Reset Password Modal', () => {
   beforeEach(() => {
     cy.visit('/')
@@ -17,4 +21,4 @@ describe('Reset Password Modal', () => {
   })
 
   // Testes serão implementados manualmente
-}) 
+}) */
