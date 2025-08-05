@@ -82,9 +82,9 @@ O projeto possui uma pipeline CI/CD que valida automaticamente:
 
 ## 🛠️ Tecnologias
 
-**Backend:** Node.js, Express, Swagger
-**Frontend:** HTML5, CSS3, JavaScript, MaterializeCSS
-**Testes:** Jest, Mocha/Chai, Cypress
-**CI/CD:** GitHub Actions
+**Backend:** Node.js, Express, Swagger  
+**Frontend:** HTML5, CSS3, JavaScript, MaterializeCSS  
+**Testes:** Jest, Mocha/Chai, Cypress  
+**CI/CD:** GitHub Actions  
 
  
