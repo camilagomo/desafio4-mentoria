@@ -1,7 +1,5 @@
 # Sistema de Autenticação - Loja da Leda LTDA
 
-[![CI/CD Pipeline](https://github.com/camilamonteiro/desafio4-mentoria/workflows/CI%2FCD%20Pipeline/badge.svg)](https://github.com/camilamonteiro/desafio4-mentoria/actions)
-
 Sistema completo com API REST, interface web e testes automatizados.
 
 ## 👥 Integrantes
@@ -20,8 +18,6 @@ npm install
 # Desenvolvimento
 npm run dev
 
-# Produção
-npm start
 ```
 API disponível em: `http://localhost:3001`
 
@@ -76,12 +72,6 @@ O projeto possui uma pipeline CI/CD que valida automaticamente:
 - **Navegação entre páginas**
 - **Funcionalidades de cache**
 
-### 🎥 Relatórios Gerados:
-
-- **Vídeos dos testes** - Gravação completa da execução
-- **Screenshots** - Capturas de tela em caso de falha
-- **Logs detalhados** - Informações sobre cada teste
-
 ## 📋 Endpoints da API
 
 - `POST /api/auth/login` - Login
@@ -92,9 +82,9 @@ O projeto possui uma pipeline CI/CD que valida automaticamente:
 
 ## 🛠️ Tecnologias
 
-**Backend:** Node.js, Express, Swagger, bcryptjs, JWT
-**Frontend:** HTML5, CSS3, JavaScript, MaterializeCSS
-**Testes:** Jest, Mocha/Chai, Cypress
-**CI/CD:** GitHub Actions
+**Backend:** Node.js, Express, Swagger  
+**Frontend:** HTML5, CSS3, JavaScript, MaterializeCSS  
+**Testes:** Jest, Mocha/Chai, Cypress  
+**CI/CD:** GitHub Actions  
 
  
