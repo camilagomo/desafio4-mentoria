@@ -23,10 +23,57 @@ jobs:
     - name: Install dependencies
       run: npm ci
       
+    - name: Check and kill processes on port 3001
+      run: |
+        echo "🔍 Checking for processes on port 3001..."
+        # Check if port 3001 is in use
+        if lsof -i:3001 > /dev/null 2>&1; then
+          echo "⚠️  Port 3001 is in use. Killing processes..."
+          sudo lsof -ti:3001 | xargs -r sudo kill -9
+          sleep 2
+        else
+          echo "✅ Port 3001 is free"
+        fi
+        
+        # Additional cleanup for Node.js processes
+        echo "🧹 Cleaning up any remaining Node.js processes..."
+        sudo pkill -f "node.*3001" || true
+        sudo pkill -f "npm.*start" || true
+        sudo pkill -f "nodemon" || true
+        
+        # Wait for cleanup
+        sleep 3
+        
+        # Verify port is free
+        if lsof -i:3001 > /dev/null 2>&1; then
+          echo "❌ Port 3001 is still in use after cleanup"
+          exit 1
+        else
+          echo "✅ Port 3001 is now free and ready"
+        fi
+        
     - name: Start API server
       run: |
+        echo "🚀 Starting API server..."
         npm start &
-        sleep 10
+        SERVER_PID=$!
+        
+        echo "⏳ Waiting for server to be ready..."
+        # Wait for server to be ready with timeout
+        timeout 30 bash -c '
+          until curl -s http://localhost:3001/health > /dev/null 2>&1; do
+            echo "Waiting for server..."
+            sleep 2
+          done
+        '
+        
+        if [ $? -eq 0 ]; then
+          echo "✅ Server is ready on http://localhost:3001"
+        else
+          echo "❌ Server failed to start within timeout"
+          exit 1
+        fi
+        
       env:
         CI: true
         
@@ -99,6 +146,8 @@ jobs:
         echo "  - API endpoints not responding"
         echo "  - Form validations failing"
         echo "  - Navigation issues"
+        echo "  - Port 3001 already in use"
+        echo "  - Server startup timeout"
         echo ""
         echo "📊 Check artifacts for:"
         echo "  - Cypress screenshots"
