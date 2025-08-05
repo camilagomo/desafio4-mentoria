@@ -5,7 +5,6 @@ const API_BASE_URL = 'http://localhost:3001/api/auth';
 const loginForm = document.getElementById('loginForm');
 const forgotPasswordForm = document.getElementById('forgotPasswordForm');
 const registerForm = document.getElementById('registerForm');
-const resetPasswordForm = document.getElementById('resetPasswordForm');
 const notification = document.getElementById('notification');
 
 // Estados dos modais
@@ -13,28 +12,136 @@ let currentModal = null;
 
 // Inicialização
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM carregado, inicializando...');
+    
+    // Verificar se o usuário já está logado
+    checkExistingLogin();
+    
     // Inicializar MaterializeCSS
-    M.AutoInit();
+    if (typeof M !== 'undefined') {
+        M.AutoInit();
+    }
     
     setupEventListeners();
+    setupInputLabels();
     checkApiStatus();
+    
+    // Teste inicial de notificação
+    setTimeout(() => {
+        showNotification('Sistema carregado com sucesso!', 'info');
+    }, 1000);
 });
+
+// Verificar se o usuário já está logado
+function checkExistingLogin() {
+    console.log('Verificando login existente...');
+    
+    const userData = localStorage.getItem('userData');
+    const userToken = localStorage.getItem('userToken');
+    
+    console.log('userData:', userData);
+    console.log('userToken:', userToken);
+    
+    if (userData && userToken) {
+        try {
+            const user = JSON.parse(userData);
+            console.log('Usuário parseado:', user);
+            
+            if (user.name && user.email) {
+                console.log('Usuário válido encontrado, redirecionando...');
+                showNotification('Usuário já logado, redirecionando...', 'info');
+                setTimeout(() => {
+                    window.location.href = '/welcome.html';
+                }, 1500);
+            } else {
+                console.log('Dados do usuário incompletos, limpando...');
+                localStorage.removeItem('userData');
+                localStorage.removeItem('userToken');
+            }
+        } catch (error) {
+            console.error('Erro ao verificar dados do usuário:', error);
+            // Limpar dados inválidos
+            localStorage.removeItem('userData');
+            localStorage.removeItem('userToken');
+        }
+    } else {
+        console.log('Nenhum dado de login encontrado');
+    }
+}
 
 // Configurar event listeners
 function setupEventListeners() {
+    console.log('Configurando event listeners...');
+    
     // Login form
-    loginForm.addEventListener('submit', handleLogin);
+    if (loginForm) {
+        console.log('Login form encontrado, adicionando listener');
+        loginForm.addEventListener('submit', handleLogin);
+    } else {
+        console.error('Login form não encontrado!');
+    }
     
     // Forgot password form
-    forgotPasswordForm.addEventListener('submit', handleForgotPassword);
+    if (forgotPasswordForm) {
+        forgotPasswordForm.addEventListener('submit', handleForgotPassword);
+    }
     
     // Register form
-    registerForm.addEventListener('submit', handleRegister);
+    if (registerForm) {
+        registerForm.addEventListener('submit', handleRegister);
+    }
     
-    // Reset password form
-    resetPasswordForm.addEventListener('submit', handleResetPassword);
+    // Adicionar event listeners para os links
+    const forgotPasswordLink = document.getElementById('forgotPasswordLink');
+    const registerLink = document.getElementById('registerLink');
     
-    // MaterializeCSS já gerencia o fechamento dos modais automaticamente
+    if (forgotPasswordLink) {
+        forgotPasswordLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            showForgotPassword();
+        });
+    }
+    
+    if (registerLink) {
+        registerLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            showRegister();
+        });
+    }
+}
+
+// Configurar labels dos inputs
+function setupInputLabels() {
+    const inputs = document.querySelectorAll('.input-field input');
+    
+    inputs.forEach(input => {
+        const label = input.nextElementSibling;
+        if (label && label.tagName === 'LABEL') {
+            // Adicionar classe active se o input tem valor
+            if (input.value.trim() !== '') {
+                label.classList.add('active');
+            }
+            
+            // Event listeners para focus/blur
+            input.addEventListener('focus', function() {
+                label.classList.add('active');
+            });
+            
+            input.addEventListener('blur', function() {
+                if (input.value.trim() === '') {
+                    label.classList.remove('active');
+                }
+            });
+            
+            input.addEventListener('input', function() {
+                if (input.value.trim() !== '') {
+                    label.classList.add('active');
+                } else {
+                    label.classList.remove('active');
+                }
+            });
+        }
+    });
 }
 
 // Verificar status da API
@@ -51,17 +158,22 @@ async function checkApiStatus() {
 
 // Função de login
 async function handleLogin(event) {
+    console.log('Função handleLogin chamada');
     event.preventDefault();
     
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
     
+    console.log('Tentando login com:', email);
+    
     if (!validateEmail(email)) {
+        console.log('Email inválido');
         showNotification('Por favor, insira um email válido.', 'error');
         return;
     }
     
     if (password.length < 3) {
+        console.log('Senha muito curta');
         showNotification('A senha deve ter pelo menos 3 caracteres.', 'error');
         return;
     }
@@ -72,6 +184,7 @@ async function handleLogin(event) {
     try {
         setButtonLoading(submitButton, true);
         
+        console.log('Fazendo requisição para API...');
         const response = await fetch(`${API_BASE_URL}/login`, {
             method: 'POST',
             headers: {
@@ -81,17 +194,26 @@ async function handleLogin(event) {
         });
         
         const data = await response.json();
+        console.log('Resposta da API:', data);
         
         if (response.ok) {
+            console.log('Login bem-sucedido');
             showNotification('Login realizado com sucesso!', 'success');
-            // Aqui você pode redirecionar para uma página de dashboard
+            
+            // Salvar dados do usuário no localStorage
+            localStorage.setItem('userData', JSON.stringify(data.user));
+            localStorage.setItem('userToken', data.token);
+            
+            // Redirecionar para página de boas-vindas após 1 segundo
             setTimeout(() => {
-                showNotification('Redirecionando para o dashboard...', 'info');
+                window.location.href = '/welcome.html';
             }, 1000);
         } else {
-            showNotification(data.message || 'Erro no login. Verifique suas credenciais.', 'error');
+            console.log('Login falhou:', data.message);
+            showNotification(data.message || 'Email ou senha inválidos.', 'error');
         }
     } catch (error) {
+        console.error('Erro na requisição:', error);
         showNotification('Erro de conexão. Verifique se a API está rodando.', 'error');
     } finally {
         setButtonLoading(submitButton, false, originalText);
@@ -102,7 +224,7 @@ async function handleLogin(event) {
 async function handleForgotPassword(event) {
     event.preventDefault();
     
-    const email = document.getElementById('forgotEmail').value;
+    const email = document.getElementById('recoveryEmail').value;
     
     if (!validateEmail(email)) {
         showNotification('Por favor, insira um email válido.', 'error');
@@ -192,58 +314,6 @@ async function handleRegister(event) {
     }
 }
 
-// Função de reset de senha
-async function handleResetPassword(event) {
-    event.preventDefault();
-    
-    const email = document.getElementById('resetEmail').value;
-    const token = document.getElementById('resetToken').value;
-    const newPassword = document.getElementById('newPassword').value;
-    
-    if (!validateEmail(email)) {
-        showNotification('Por favor, insira um email válido.', 'error');
-        return;
-    }
-    
-    if (token.length < 3) {
-        showNotification('Token inválido.', 'error');
-        return;
-    }
-    
-    if (newPassword.length < 3) {
-        showNotification('A nova senha deve ter pelo menos 3 caracteres.', 'error');
-        return;
-    }
-    
-    const submitButton = resetPasswordForm.querySelector('button[type="submit"]');
-    const originalText = submitButton.innerHTML;
-    
-    try {
-        setButtonLoading(submitButton, true);
-        
-        const response = await fetch(`${API_BASE_URL}/reset-password`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ email, token, newPassword })
-        });
-        
-        const data = await response.json();
-        
-        if (response.ok) {
-            showNotification('Senha redefinida com sucesso!', 'success');
-            closeModal('resetPasswordModal');
-        } else {
-            showNotification(data.message || 'Erro ao redefinir senha.', 'error');
-        }
-    } catch (error) {
-        showNotification('Erro de conexão. Verifique se a API está rodando.', 'error');
-    } finally {
-        setButtonLoading(submitButton, false, originalText);
-    }
-}
-
 // Funções de UI
 function showForgotPassword() {
     const modal = M.Modal.getInstance(document.getElementById('forgotPasswordModal')) || 
@@ -257,13 +327,6 @@ function showRegister() {
                   M.Modal.init(document.getElementById('registerModal'));
     modal.open();
     currentModal = 'registerModal';
-}
-
-function showResetPassword() {
-    const modal = M.Modal.getInstance(document.getElementById('resetPasswordModal')) || 
-                  M.Modal.init(document.getElementById('resetPasswordModal'));
-    modal.open();
-    currentModal = 'resetPasswordModal';
 }
 
 function closeModal(modalId) {
@@ -282,7 +345,7 @@ function closeModal(modalId) {
 
 function togglePassword() {
     const passwordInput = document.getElementById('password');
-    const toggleButton = document.querySelector('.toggle-password i');
+    const toggleButton = document.querySelector('.password-toggle');
     
     if (passwordInput.type === 'password') {
         passwordInput.type = 'text';
@@ -294,12 +357,36 @@ function togglePassword() {
 }
 
 function showNotification(message, type = 'info') {
-    notification.textContent = message;
-    notification.className = `notification ${type} show`;
+    console.log('showNotification chamada:', message, type);
     
-    setTimeout(() => {
-        notification.classList.remove('show');
-    }, 5000);
+    // Buscar o elemento notification
+    const notificationElement = document.getElementById('notification');
+    
+    if (notificationElement) {
+        console.log('Elemento notification encontrado');
+        
+        // Limpar classes anteriores
+        notificationElement.className = 'notification';
+        
+        // Aplicar novas classes
+        notificationElement.classList.add(type, 'show');
+        notificationElement.textContent = message;
+        
+        console.log('Classes aplicadas:', notificationElement.className);
+        console.log('Texto aplicado:', notificationElement.textContent);
+        
+        // Forçar reflow para garantir que as mudanças sejam aplicadas
+        notificationElement.offsetHeight;
+        
+        // Remover após 5 segundos
+        setTimeout(() => {
+            notificationElement.classList.remove('show');
+        }, 5000);
+    } else {
+        console.error('Elemento notification não encontrado!');
+        // Fallback para alert se notification não existir
+        alert(message);
+    }
 }
 
 function setButtonLoading(button, isLoading, originalText = '') {
@@ -323,7 +410,6 @@ window.authUtils = {
     login: handleLogin,
     forgotPassword: handleForgotPassword,
     register: handleRegister,
-    resetPassword: handleResetPassword,
     showNotification,
     validateEmail
 }; 

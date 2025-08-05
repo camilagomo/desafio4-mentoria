@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bem-vindo - Loja da Leda LTDA</title>
+    
+    <!-- MaterializeCSS CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .welcome-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 3rem;
+            margin-top: 2rem;
+            text-align: center;
+        }
+        
+        .welcome-icon {
+            font-size: 4rem;
+            color: #4CAF50;
+            margin-bottom: 1rem;
+        }
+        
+        .user-info {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem;
+            border-radius: 10px;
+            margin: 2rem 0;
+        }
+        
+        .logout-btn {
+            margin-top: 2rem;
+        }
+        
+        .logout-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(244, 67, 54, 0.3);
+        }
+        
+        .logout-btn:active {
+            transform: translateY(0);
+        }
+        
+        .logout-confirmation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .logout-modal {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+        }
+        
+        .logout-modal h5 {
+            color: #333;
+            margin-bottom: 1rem;
+        }
+        
+        .logout-modal p {
+            color: #666;
+            margin-bottom: 2rem;
+        }
+        
+        .logout-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col s12 m8 l6 offset-m2 offset-l3">
+                <div class="card-panel welcome-container">
+                    <div class="welcome-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    
+                    <h3>Bem-vindo à Loja da Leda LTDA!</h3>
+                    
+                    <div class="user-info">
+                        <h5 id="userName">Usuário</h5>
+                        <p id="userEmail">usuario@exemplo.com</p>
+                    </div>
+                    
+                    <p class="flow-text">
+                        Login realizado com sucesso! Você agora tem acesso ao sistema.
+                    </p>
+                    
+                    <div class="row">
+                        <div class="col s12 m6">
+                            <div class="card blue darken-1">
+                                <div class="card-content white-text">
+                                    <span class="card-title">
+                                        <i class="material-icons left">shopping_cart</i>
+                                        Produtos
+                                    </span>
+                                    <p>Gerencie o catálogo de produtos da loja.</p>
+                                </div>
+                                <div class="card-action">
+                                    <a href="#" class="white-text">Acessar</a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col s12 m6">
+                            <div class="card green darken-1">
+                                <div class="card-content white-text">
+                                    <span class="card-title">
+                                        <i class="material-icons left">people</i>
+                                        Clientes
+                                    </span>
+                                    <p>Gerencie o cadastro de clientes.</p>
+                                </div>
+                                <div class="card-action">
+                                    <a href="#" class="white-text">Acessar</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button class="btn waves-effect waves-light red darken-2 logout-btn" id="logoutBtn">
+                        <i class="material-icons left">logout</i>
+                        Sair
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Confirmação de Logout -->
+    <div id="logoutConfirmation" class="logout-confirmation">
+        <div class="logout-modal">
+            <h5><i class="material-icons red-text">warning</i> Confirmar Saída</h5>
+            <p>Tem certeza que deseja sair do sistema?</p>
+            <div class="logout-actions">
+                <button class="btn waves-effect waves-light grey" onclick="cancelLogout()">
+                    <i class="material-icons left">cancel</i>
+                    Cancelar
+                </button>
+                <button class="btn waves-effect waves-light red darken-2" onclick="logout()">
+                    <i class="material-icons left">logout</i>
+                    Sim, Sair
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MaterializeCSS JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script>
+        // Inicializar MaterializeCSS
+        document.addEventListener('DOMContentLoaded', function() {
+            M.AutoInit();
+            
+            // Recuperar dados do usuário do localStorage
+            const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+            
+            if (userData.name && userData.email) {
+                document.getElementById('userName').textContent = userData.name;
+                document.getElementById('userEmail').textContent = userData.email;
+            } else {
+                // Redirecionar para login se não há dados do usuário
+                window.location.href = '/';
+            }
+            
+            // Adicionar event listener para o botão de logout
+            document.getElementById('logoutBtn').addEventListener('click', function() {
+                confirmLogout();
+            });
+        });
+        
+        function confirmLogout() {
+            const modal = document.getElementById('logoutConfirmation');
+            modal.style.display = 'flex';
+        }
+        
+        function cancelLogout() {
+            const modal = document.getElementById('logoutConfirmation');
+            modal.style.display = 'none';
+        }
+        
+        function logout() {
+            console.log('Função logout chamada');
+            
+            // Mostrar loading no botão
+            const logoutBtn = document.getElementById('logoutBtn');
+            const originalText = logoutBtn.innerHTML;
+            logoutBtn.innerHTML = '<div class="preloader-wrapper small active"><div class="spinner-layer spinner-red-only"><div class="circle-clipper left"><div class="circle"></div></div><div class="gap-patch"><div class="circle"></div></div><div class="circle-clipper right"><div class="circle"></div></div></div></div> Saindo...';
+            logoutBtn.disabled = true;
+            
+            console.log('Limpando dados do usuário...');
+            
+            // Limpar dados do usuário
+            localStorage.removeItem('userData');
+            localStorage.removeItem('userToken');
+            
+            // Limpar também sessionStorage por segurança
+            sessionStorage.removeItem('userData');
+            sessionStorage.removeItem('userToken');
+            
+            console.log('Dados limpos, aguardando redirecionamento...');
+            
+            // Aguardar um pouco para mostrar o loading
+            setTimeout(() => {
+                console.log('Redirecionando para login...');
+                // Forçar redirecionamento para login
+                window.location.replace('/');
+            }, 1000);
+        }
+        
+        // Fechar modal ao clicar fora dele
+        document.getElementById('logoutConfirmation').addEventListener('click', function(e) {
+            if (e.target === this) {
+                cancelLogout();
+            }
+        });
+        
+        // Fechar modal com ESC
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                cancelLogout();
+            }
+        });
+    </script>
+</body>
+</html> 

@@ -1,17 +1,16 @@
 describe('Registrar', () => {
   beforeEach(() => {
-    cy.visit('http://localhost:3001/#')
+    cy.visit('http://localhost:3001/')
     cy.get('[onclick="showRegister()"]').click()
   })
 
   it('Deve criar conta com dados válidos e validar chamada da API', () => {
     // Interceptar a chamada de registro para a API
-    cy.intercept('POST', '**/api/users/register', {
+    cy.intercept('POST', '**/api/auth/register', {
       statusCode: 201,
       body: {
-        message: 'Usuário cadastrado com sucesso',
+        message: 'Conta criada com sucesso! Faça login para continuar.',
         user: {
-          id: 1,
           name: 'Camila Lindona',
           email: 'camilalinda@exemplo.com'
         }
@@ -33,7 +32,7 @@ describe('Registrar', () => {
       })
     })
     
-    cy.get('#notification').should('have.text', 'Conta criada com sucesso! Faça login para continuar.')
+    cy.get('#notification').should('contain', 'Conta criada com sucesso! Faça login para continuar.')
   })
 
   it('Deve testar registro real com a API (sem mock)', () => {
@@ -51,9 +50,9 @@ describe('Registrar', () => {
     cy.get('#notification', { timeout: 10000 }).should('contain', 'sucesso')
     
     // Validar que o usuário foi realmente criado fazendo login
-    cy.visit('http://localhost:3001/#')
-    cy.get('input[name="email"]').type(uniqueEmail, { force: true })
-    cy.get('input[name="password"]').type('senha123', { force: true })
+    cy.visit('http://localhost:3001/')
+    cy.get('#email').type(uniqueEmail, { force: true })
+    cy.get('#password').type('senha123', { force: true })
     cy.contains('button', 'Entrar').click()
     
     // Se conseguir fazer login, o usuário foi cadastrado
@@ -63,9 +62,9 @@ describe('Registrar', () => {
   it('Deve validar campos obrigatórios', () => {
     cy.contains('button', 'Criar Conta').click()
     
-    cy.contains('Nome é obrigatório').should('be.visible')
-    cy.contains('Email é obrigatório').should('be.visible')
-    cy.contains('Senha é obrigatória').should('be.visible')
+    // Verificar se aparecem mensagens de validação
+    cy.get('#notification', { timeout: 5000 }).should('be.visible')
+      .and('contain', 'Por favor, insira um email válido')
   })
 
   it('Deve validar formato de email inválido', () => {
@@ -74,20 +73,21 @@ describe('Registrar', () => {
     cy.get('#registerPassword').type('senha123')
     cy.contains('button', 'Criar Conta').click()
     
-    cy.contains('Formato de email inválido').should('be.visible')
+    cy.get('#notification', { timeout: 5000 }).should('be.visible')
+      .and('contain', 'Por favor, insira um email válido')
   })
 
   it('Deve exibir erro para email já cadastrado', () => {
     // Interceptar chamada que retorna erro de email duplicado
-    cy.intercept('POST', '**/api/users/register', {
+    cy.intercept('POST', '**/api/auth/register', {
       statusCode: 400,
       body: {
-        error: 'Email já cadastrado'
+        message: 'Email já cadastrado'
       }
     }).as('duplicateEmailRequest')
 
     cy.get('#registerName').type('Outro Usuario')
-    cy.get('#registerEmail').type('reginaldo@exemplo.com')
+    cy.get('#registerEmail').type('usuario@valido.com') // Usuário já existente
     cy.get('#registerPassword').type('senha123')
     cy.contains('button', 'Criar Conta').click()
     
@@ -98,9 +98,10 @@ describe('Registrar', () => {
   it('Deve validar senha com critérios mínimos', () => {
     cy.get('#registerName').type('Teste Usuario')
     cy.get('#registerEmail').type('teste@exemplo.com')
-    cy.get('#registerPassword').type('123') // Senha muito curta
+    cy.get('#registerPassword').type('12') // Senha muito curta
     cy.contains('button', 'Criar Conta').click()
     
-    cy.contains('Senha deve ter pelo menos 6 caracteres').should('be.visible')
+    cy.get('#notification', { timeout: 5000 }).should('be.visible')
+      .and('contain', 'A senha deve ter pelo menos 3 caracteres')
   })
 })

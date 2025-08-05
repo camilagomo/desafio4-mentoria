@@ -3,324 +3,106 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Sistema de Autenticação</title>
+    <title>Login - Loja da Leda LTDA</title>
     
-    <!-- MaterializeCSS -->
+    <!-- MaterializeCSS CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <!-- Material Icons -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
-    <!-- Custom CSS -->
     <link rel="stylesheet" href="css/styles.css">
-    <style>
-        /* Estilo para corrigir labels */
-        .input-field label.active {
-            transform: translateY(-14px) scale(0.8);
-        }
-        /* Mostrar claramente a notificação */
-        #notification {
-            background: #fff; 
-            color: red; 
-            margin: 10px 0; 
-            padding: 10px; 
-            border-radius: 4px; 
-            border: 1px solid #f44336; 
-            text-align: center; 
-            font-weight: bold;
-            display: none;
-        }
-        /* Melhorar aparência do dashboard */
-        #dashboardScreen {
-            margin-top: 20px;
-        }
-    </style>
 </head>
 <body>
     <div class="container">
-        <!-- Tela de Login -->
-        <div id="loginScreen" class="row">
+        <div class="row">
             <div class="col s12 m8 l6 offset-m2 offset-l3">
                 <div class="card-panel login-container">
-                    <div class="login-header center-align">
-                        <h1 class="blue-text text-darken-2">
-                            <i class="material-icons large">lock</i> Login
-                        </h1>
-                        <p class="flow-text grey-text text-darken-1">Faça login para acessar o sistema</p>
-                        <div class="company-info">
-                            <h5 class="white-text">
-                                <i class="material-icons">store</i> Loja da Leda LTDA
-                            </h5>
-                        </div>
+                    <div class="company-info">
+                        <h3><i class="fas fa-store"></i> Loja da Leda LTDA</h3>
                     </div>
-
-                    <!-- Adicione aqui para exibir mensagem de erro -->
-                    <div id="notification" class="notification" style="background: #fff; color: red; margin-bottom: 10px; min-height: 20px; padding: 8px; border-radius: 4px; border: 1px solid #f44336; text-align: center; font-weight: bold;"></div>
-                    <form id="loginForm" class="login-form">
-                        <div class="row">
-                            <div class="input-field col s12">
-                                <i class="material-icons prefix">email</i>
-                                <input 
-                                    type="email" 
-                                    id="email" 
-                                    name="email" 
-                                    class="validate"
-                                    required
-                                >
-                                <label for="email">Email</label>
-                            </div>
+                    
+                    <div id="notification" class="notification"></div>
+                    
+                    <form id="loginForm">
+                        <div class="input-field">
+                            <i class="material-icons prefix">email</i>
+                            <input type="email" id="email" name="email" class="validate" required>
+                            <label for="email" class="active">Email</label>
                         </div>
-
-                        <div class="row">
-                            <div class="input-field col s12">
-                                <i class="material-icons prefix">lock</i>
-                                <input 
-                                    type="password" 
-                                    id="password" 
-                                    name="password" 
-                                    class="validate"
-                                    required
-                                >
-                                <label for="password">Senha</label>
-                                <button type="button" class="btn-flat toggle-password" onclick="togglePassword()">
-                                    <i class="material-icons">visibility</i>
-                                </button>
-                            </div>
+                        
+                        <div class="input-field">
+                            <i class="material-icons prefix">lock</i>
+                            <input type="password" id="password" name="password" class="validate" required>
+                            <label for="password" class="active">Senha</label>
+                            <i class="material-icons suffix password-toggle" onclick="togglePassword()">visibility</i>
                         </div>
-
-                        <div class="row">
-                            <div class="col s12">
-                                <button type="submit" class="btn waves-effect waves-light blue darken-2 col s12">
-                                    <i class="material-icons left">login</i> Entrar
-                                </button>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col s12 center-align">
-                                <a href="#" onclick="showForgotPassword()" class="blue-text text-darken-2">
-                                    Esqueceu sua senha?
-                                </a>
-                                <br>
-                                <a href="#" onclick="showRegister()" class="blue-text text-darken-2">
-                                    Criar nova conta
-                                </a>
-                            </div>
-                        </div>
+                        
+                        <button type="submit" class="btn waves-effect waves-light blue darken-2" style="width: 100%;">
+                            <i class="material-icons left">login</i>
+                            Entrar
+                        </button>
                     </form>
-
-            <!-- Modal de Recuperação de Senha -->
-            <div id="forgotPasswordModal" class="modal">
-                <div class="modal-content">
-                    <h4 class="blue-text text-darken-2">
-                        <i class="material-icons">vpn_key</i> Recuperar Senha
-                    </h4>
-                    <form id="forgotPasswordForm">
-                        <div class="row">
-                            <div class="input-field col s12">
-                                <i class="material-icons prefix">email</i>
-                                <input type="email" id="forgotEmail" class="validate" required>
-                                <label for="forgotEmail">Email</label>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col s12">
-                                <button type="submit" class="btn waves-effect waves-light blue darken-2 col s12">
-                                    <i class="material-icons left">send</i> Enviar Email
-                                </button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
-
-            <!-- Modal de Registro -->
-            <div id="registerModal" class="modal">
-                <div class="modal-content">
-                    <h4 class="blue-text text-darken-2">
-                        <i class="material-icons">person_add</i> Criar Conta
-                    </h4>
-                    <form id="registerForm">
-                        <div class="row">
-                            <div class="input-field col s12">
-                                <i class="material-icons prefix">person</i>
-                                <input type="text" id="registerName" class="validate" required>
-                                <label for="registerName">Nome</label>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="input-field col s12">
-                                <i class="material-icons prefix">email</i>
-                                <input type="email" id="registerEmail" class="validate" required>
-                                <label for="registerEmail">Email</label>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="input-field col s12">
-                                <i class="material-icons prefix">lock</i>
-                                <input type="password" id="registerPassword" class="validate" required>
-                                <label for="registerPassword">Senha</label>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col s12">
-                                <button type="submit" class="btn waves-effect waves-light blue darken-2 col s12">
-                                    <i class="material-icons left">person_add</i> Criar Conta
-                                </button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
-
-            <!-- Modal de Reset de Senha -->
-            <div id="resetPasswordModal" class="modal">
-                <div class="modal-content">
-                    <h4 class="blue-text text-darken-2">
-                        <i class="material-icons">lock_reset</i> Redefinir Senha
-                    </h4>
-                    <form id="resetPasswordForm">
-                        <div class="row">
-                            <div class="input-field col s12">
-                                <i class="material-icons prefix">email</i>
-                                <input type="email" id="resetEmail" class="validate" required>
-                                <label for="resetEmail">Email</label>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="input-field col s12">
-                                <i class="material-icons prefix">security</i>
-                                <input type="text" id="resetToken" class="validate" required>
-                                <label for="resetToken">Token</label>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="input-field col s12">
-                                <i class="material-icons prefix">lock</i>
-                                <input type="password" id="newPassword" class="validate" required>
-                                <label for="newPassword">Nova Senha</label>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col s12">
-                                <button type="submit" class="btn waves-effect waves-light blue darken-2 col s12">
-                                    <i class="material-icons left">lock_reset</i> Redefinir Senha
-                                </button>
-                            </div>
-                        </div>
-                    </form>
+                    
+                    <div class="links">
+                        <a href="#" id="forgotPasswordLink">Esqueci minha senha</a>
+                        <a href="#" id="registerLink">Criar conta</a>
+                        <a href="/debug" style="color: #ff9800;">🔧 Debug Cache</a>
+                    </div>
                 </div>
             </div>
         </div>
+    </div>
 
-        <!-- Página interna: Dashboard -->
-        <div id="dashboardScreen" class="row" style="display: none;">
-            <div class="col s12 m8 l6 offset-m2 offset-l3">
-                <div class="card-panel center-align">
-                    <h2 class="blue-text text-darken-2">
-                        <i class="material-icons large">check_circle</i>
-                        Login bem-sucedido!
-                    </h2>
-                    <p class="flow-text grey-text text-darken-1">Bem-vindo ao sistema.</p>
-                    <button class="btn waves-effect waves-light red darken-2" onclick="logout()">
-                        <i class="material-icons left">exit_to_app</i>Sair
-                    </button>
+    <!-- Modal Esqueci a Senha -->
+    <div id="forgotPasswordModal" class="modal">
+        <div class="modal-content">
+            <h4><i class="material-icons">lock_reset</i> Recuperar Senha</h4>
+            <form id="forgotPasswordForm">
+                <div class="input-field">
+                    <i class="material-icons prefix">email</i>
+                    <input type="email" id="recoveryEmail" class="validate" required>
+                    <label for="recoveryEmail" class="active">Email</label>
                 </div>
-            </div>
+                <button type="submit" class="btn waves-effect waves-light blue darken-2">
+                    <i class="material-icons left">send</i>
+                    Enviar
+                </button>
+            </form>
         </div>
+    </div>
 
+    <!-- Modal Criar Conta -->
+    <div id="registerModal" class="modal">
+        <div class="modal-content">
+            <h4><i class="material-icons">person_add</i> Criar Nova Conta</h4>
+            <form id="registerForm">
+                <div class="input-field">
+                    <i class="material-icons prefix">person</i>
+                    <input type="text" id="registerName" class="validate" required>
+                    <label for="registerName" class="active">Nome Completo</label>
+                </div>
+                <div class="input-field">
+                    <i class="material-icons prefix">email</i>
+                    <input type="email" id="registerEmail" class="validate" required>
+                    <label for="registerEmail" class="active">Email</label>
+                </div>
+                <div class="input-field">
+                    <i class="material-icons prefix">lock</i>
+                    <input type="password" id="registerPassword" class="validate" required>
+                    <label for="registerPassword" class="active">Senha</label>
+                </div>
+                <button type="submit" class="btn waves-effect waves-light blue darken-2">
+                    <i class="material-icons left">save</i>
+                    Criar Conta
+                </button>
+            </form>
+        </div>
     </div>
 
     <!-- MaterializeCSS JavaScript -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
-    
-    <!-- Custom JavaScript -->
     <script src="js/app.js"></script>
-    <script>
-    // Inicializar componentes Materialize
-    document.addEventListener('DOMContentLoaded', function() {
-        // Inicializar modais
-        var modals = document.querySelectorAll('.modal');
-        M.Modal.init(modals);
-        
-        // Fix para labels - ativar labels quando os campos têm conteúdo
-        var inputs = document.querySelectorAll('input');
-        inputs.forEach(function(input) {
-            input.addEventListener('focus', function() {
-                var label = document.querySelector(`label[for="${this.id}"]`);
-                if (label) label.classList.add('active');
-            });
-            
-            // Verificar se já tem valor ao carregar
-            if (input.value.trim() !== '') {
-                var label = document.querySelector(`label[for="${this.id}"]`);
-                if (label) label.classList.add('active');
-            }
-        });
-        
-        // Mostrar ou esconder senha
-        window.togglePassword = function() {
-            var passwordField = document.getElementById('password');
-            var icon = document.querySelector('.toggle-password i');
-            
-            if (passwordField.type === 'password') {
-                passwordField.type = 'text';
-                icon.textContent = 'visibility_off';
-            } else {
-                passwordField.type = 'password';
-                icon.textContent = 'visibility';
-            }
-        };
-        
-        // Mostrar modal de recuperação de senha
-        window.showForgotPassword = function() {
-            var modal = document.getElementById('forgotPasswordModal');
-            var instance = M.Modal.getInstance(modal);
-            instance.open();
-        };
-        
-        // Mostrar modal de registro
-        window.showRegister = function() {
-            var modal = document.getElementById('registerModal');
-            var instance = M.Modal.getInstance(modal);
-            instance.open();
-        };
-        
-        // Função para mostrar dashboard após login
-        window.showDashboard = function() {
-            document.getElementById('loginScreen').style.display = 'none';
-            document.getElementById('dashboardScreen').style.display = 'block';
-            document.getElementById('notification').style.display = 'none';
-        };
-        
-        // Função para logout
-        window.logout = function() {
-            document.getElementById('dashboardScreen').style.display = 'none';
-            document.getElementById('loginScreen').style.display = 'block';
-            document.getElementById('loginForm').reset();
-            document.getElementById('notification').style.display = 'none';
-            
-            // Desativar labels quando limpa o formulário
-            document.querySelectorAll('#loginForm label').forEach(function(label) {
-                label.classList.remove('active');
-            });
-        };
-        
-        // Interceptar o formulário de login
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const email = document.getElementById('email').value;
-            const senha = document.getElementById('password').value;
-            
-            if (email === 'reginaldo@exemplo.com' && senha === 'senha123') {
-                showDashboard();
-            } else {
-                const notification = document.getElementById('notification');
-                notification.textContent = 'Email ou senha inválidos!';
-                notification.style.display = 'block';
-            }
-        });
-    });
-    </script>
 </body>
 </html>

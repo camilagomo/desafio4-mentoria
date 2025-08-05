@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste de Notificações</title>
+    <link rel="stylesheet" href="public/css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col s12 m8 l6 offset-m2 offset-l3">
+                <div class="card-panel login-container">
+                    <h3>Teste de Notificações</h3>
+                    
+                    <div id="notification" class="notification"></div>
+                    
+                    <button onclick="testSuccess()" class="btn waves-effect waves-light green">Teste Sucesso</button>
+                    <button onclick="testError()" class="btn waves-effect waves-light red">Teste Erro</button>
+                    <button onclick="testInfo()" class="btn waves-effect waves-light blue">Teste Info</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showNotification(message, type = 'info') {
+            console.log('showNotification chamada:', message, type);
+            
+            const notification = document.getElementById('notification');
+            if (notification) {
+                console.log('Elemento notification encontrado');
+                notification.textContent = message;
+                notification.className = `notification ${type} show`;
+                
+                console.log('Classes aplicadas:', notification.className);
+                
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                }, 5000);
+            } else {
+                console.error('Elemento notification não encontrado!');
+                alert(message);
+            }
+        }
+
+        function testSuccess() {
+            showNotification('Teste de sucesso funcionando!', 'success');
+        }
+
+        function testError() {
+            showNotification('Teste de erro funcionando!', 'error');
+        }
+
+        function testInfo() {
+            showNotification('Teste de info funcionando!', 'info');
+        }
+    </script>
+</body>
+</html> 

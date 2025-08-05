@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Limpar Cache - Loja da Leda LTDA</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .clear-cache-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 3rem;
+            margin-top: 2rem;
+            text-align: center;
+        }
+        
+        .clear-icon {
+            font-size: 4rem;
+            color: #ff9800;
+            margin-bottom: 1rem;
+        }
+        
+        .status-info {
+            background: #f5f5f5;
+            padding: 1rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            text-align: left;
+        }
+        
+        .status-info h6 {
+            margin: 0 0 0.5rem 0;
+            color: #333;
+        }
+        
+        .status-info p {
+            margin: 0.25rem 0;
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .btn-large {
+            margin: 0.5rem;
+            cursor: pointer !important;
+            pointer-events: auto !important;
+            position: relative !important;
+            z-index: 10 !important;
+        }
+        
+        .btn-large:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .btn-large:active {
+            transform: translateY(0);
+        }
+        
+        /* Garantir que os botões sejam clicáveis */
+        button {
+            cursor: pointer !important;
+            pointer-events: auto !important;
+            position: relative !important;
+            z-index: 10 !important;
+        }
+        
+        /* Remover qualquer overlay que possa estar bloqueando */
+        .clear-cache-container::before,
+        .clear-cache-container::after {
+            pointer-events: none !important;
+        }
+        
+        /* Garantir que o container não bloqueie os cliques */
+        .clear-cache-container {
+            pointer-events: auto !important;
+        }
+        
+        /* Garantir que as colunas não bloqueiem */
+        .col {
+            pointer-events: auto !important;
+        }
+        
+        /* Garantir que as linhas não bloqueiem */
+        .row {
+            pointer-events: auto !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col s12 m8 l6 offset-m2 offset-l3">
+                <div class="card-panel clear-cache-container">
+                    <div class="clear-icon">
+                        <i class="material-icons">cleaning_services</i>
+                    </div>
+                    
+                    <h3>Limpar Cache e Dados</h3>
+                    
+                    <p class="flow-text">
+                        Esta página ajuda a limpar dados armazenados que podem estar causando problemas.
+                    </p>
+                    
+                    <div id="statusInfo" class="status-info">
+                        <h6>Status Atual:</h6>
+                        <p id="localStorageStatus">Verificando...</p>
+                        <p id="sessionStorageStatus">Verificando...</p>
+                        <p id="cookiesStatus">Verificando...</p>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col s12">
+                            <button type="button" class="btn-large waves-effect waves-light orange" onclick="clearLocalStorage()">
+                                <i class="material-icons left">delete_sweep</i>
+                                Limpar localStorage
+                            </button>
+                        </div>
+                        
+                        <div class="col s12">
+                            <button type="button" class="btn-large waves-effect waves-light red" onclick="clearAllData()">
+                                <i class="material-icons left">clear_all</i>
+                                Limpar Tudo
+                            </button>
+                        </div>
+                        
+                        <div class="col s12">
+                            <button type="button" class="btn-large waves-effect waves-light blue" onclick="goToLogin()">
+                                <i class="material-icons left">login</i>
+                                Ir para Login
+                            </button>
+                        </div>
+                        
+                        <div class="col s12">
+                            <button type="button" class="btn-large waves-effect waves-light green" onclick="goToWelcome()">
+                                <i class="material-icons left">home</i>
+                                Ir para Boas-vindas
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div id="notification" class="notification"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM carregado, inicializando...');
+            M.AutoInit();
+            checkCurrentStatus();
+            
+            // Adicionar event listeners para debug
+            const buttons = document.querySelectorAll('button');
+            buttons.forEach((button, index) => {
+                console.log(`Botão ${index + 1}:`, button.textContent.trim());
+                button.addEventListener('click', function(e) {
+                    console.log('Botão clicado:', this.textContent.trim());
+                });
+            });
+        });
+        
+        function checkCurrentStatus() {
+            console.log('Verificando status atual...');
+            const localStorageData = localStorage.getItem('userData');
+            const localStorageToken = localStorage.getItem('userToken');
+            const sessionStorageData = sessionStorage.getItem('userData');
+            const sessionStorageToken = sessionStorage.getItem('userToken');
+            
+            document.getElementById('localStorageStatus').textContent = 
+                `localStorage: ${localStorageData ? 'Dados encontrados' : 'Vazio'} | Token: ${localStorageToken ? 'Presente' : 'Ausente'}`;
+            
+            document.getElementById('sessionStorageStatus').textContent = 
+                `sessionStorage: ${sessionStorageData ? 'Dados encontrados' : 'Vazio'} | Token: ${sessionStorageToken ? 'Presente' : 'Ausente'}`;
+            
+            document.getElementById('cookiesStatus').textContent = 
+                `Cookies: ${document.cookie ? 'Presentes' : 'Ausentes'}`;
+        }
+        
+        function clearLocalStorage() {
+            console.log('Função clearLocalStorage chamada');
+            localStorage.removeItem('userData');
+            localStorage.removeItem('userToken');
+            showNotification('localStorage limpo com sucesso!', 'success');
+            checkCurrentStatus();
+        }
+        
+        function clearAllData() {
+            console.log('Função clearAllData chamada');
+            // Limpar localStorage
+            localStorage.clear();
+            
+            // Limpar sessionStorage
+            sessionStorage.clear();
+            
+            // Limpar cookies (tentar)
+            document.cookie.split(";").forEach(function(c) { 
+                document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); 
+            });
+            
+            showNotification('Todos os dados foram limpos com sucesso!', 'success');
+            checkCurrentStatus();
+        }
+        
+        function goToLogin() {
+            console.log('Função goToLogin chamada');
+            window.location.href = '/';
+        }
+        
+        function goToWelcome() {
+            console.log('Função goToWelcome chamada');
+            window.location.href = '/welcome.html';
+        }
+        
+        function showNotification(message, type = 'info') {
+            console.log('Mostrando notificação:', message, type);
+            const notification = document.getElementById('notification');
+            if (notification) {
+                notification.textContent = message;
+                notification.className = `notification ${type} show`;
+                
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                }, 5000);
+            } else {
+                alert(message);
+            }
+        }
+    </script>
+</body>
+</html> 

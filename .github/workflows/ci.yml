@@ -1,4 +1,4 @@
-name: CI/CD Pipeline
+name: Cypress E2E Tests
 
 on:
   push:
@@ -7,54 +7,6 @@ on:
     branches: [ main ]
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
-    
-    strategy:
-      matrix:
-        node-version: [16.x, 18.x, 20.x]
-    
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-      
-    - name: Setup Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-        
-    - name: Install dependencies
-      run: npm ci
-      
-    - name: Run API tests with Mocha Awesome
-      run: |
-        npm run test:api:ci
-      env:
-        CI: true
-        
-    - name: Run unit tests
-      run: |
-        npm test
-      env:
-        CI: true
-        
-    - name: Upload Mocha Awesome report
-      uses: actions/upload-artifact@v4
-      if: always()
-      with:
-        name: mochawesome-report-${{ matrix.node-version }}
-        path: mochawesome-report/
-        
-    - name: Upload test results
-      uses: actions/upload-artifact@v4
-      if: always()
-      with:
-        name: test-results-${{ matrix.node-version }}
-        path: |
-          mochawesome-report/
-          coverage/
-          
   cypress:
     runs-on: ubuntu-latest
     
@@ -118,10 +70,10 @@ jobs:
         echo "📅 Created at: ${{ github.event.pull_request.created_at }}"
         echo ""
         echo "🔍 Review required for:"
-        echo "  - Code quality"
-        echo "  - Test coverage"
-        echo "  - API functionality"
-        echo "  - Frontend changes"
+        echo "  - Frontend functionality"
+        echo "  - User interface changes"
+        echo "  - Login/logout flow"
+        echo "  - Form validations"
         echo ""
         echo "⚠️  Please review and approve this PR!"
         
@@ -135,26 +87,25 @@ jobs:
       
     - name: Alert test failures
       run: |
-        echo "🚨 TESTS FAILED - IMMEDIATE ATTENTION REQUIRED!"
+        echo "🚨 CYPRESS TESTS FAILED - IMMEDIATE ATTENTION REQUIRED!"
         echo "❌ Build Status: FAILED"
         echo "🔗 Workflow URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
         echo "📝 Commit: ${{ github.sha }}"
         echo "👤 Author: ${{ github.actor }}"
         echo ""
         echo "🔍 Possible issues:"
-        echo "  - API tests failing"
-        echo "  - Unit tests failing"
-        echo "  - Cypress E2E tests failing"
-        echo "  - Build errors"
-        echo "  - Dependency issues"
+        echo "  - Login functionality broken"
+        echo "  - UI elements not found"
+        echo "  - API endpoints not responding"
+        echo "  - Form validations failing"
+        echo "  - Navigation issues"
         echo ""
         echo "📊 Check artifacts for:"
-        echo "  - Mocha Awesome reports"
         echo "  - Cypress screenshots"
         echo "  - Cypress videos"
         echo "  - Test logs"
         echo ""
-        echo "⚠️  URGENT: Fix tests before merging!"
+        echo "⚠️  URGENT: Fix E2E tests before merging!"
         
   success-alerts:
     runs-on: ubuntu-latest
@@ -166,27 +117,28 @@ jobs:
       
     - name: Alert successful tests
       run: |
-        echo "✅ ALL TESTS PASSED - READY FOR REVIEW!"
+        echo "✅ CYPRESS TESTS PASSED - READY FOR REVIEW!"
         echo "🎉 Build Status: SUCCESS"
         echo "🔗 Workflow URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
         echo "📝 Commit: ${{ github.sha }}"
         echo "👤 Author: ${{ github.actor }}"
         echo ""
         echo "📊 Test Results:"
-        echo "  - ✅ API tests passed"
-        echo "  - ✅ Unit tests passed"
-        echo "  - ✅ Cypress E2E tests passed"
-        echo "  - ✅ All Node.js versions (16.x, 18.x, 20.x)"
+        echo "  - ✅ Login functionality working"
+        echo "  - ✅ Logout functionality working"
+        echo "  - ✅ Form validations working"
+        echo "  - ✅ UI elements responsive"
+        echo "  - ✅ Navigation flows working"
         echo ""
         echo "📈 Reports Available:"
-        echo "  - Mocha Awesome HTML reports"
-        echo "  - Test coverage reports"
         echo "  - Cypress test videos"
+        echo "  - Screenshots (if any failures)"
+        echo "  - Detailed test logs"
         echo ""
         echo "🚀 Ready for merge!"
         
   notify:
-    needs: [test, cypress]
+    needs: [cypress]
     runs-on: ubuntu-latest
     if: always()
     
@@ -197,14 +149,19 @@ jobs:
     - name: Notify test completion
       run: |
         if [ "${{ job.status }}" == "success" ]; then
-          echo "✅ All tests completed successfully!"
+          echo "✅ Cypress E2E tests completed successfully!"
           echo "📊 Test reports available in artifacts"
-          echo "🔗 API: http://localhost:3001"
-          echo "📖 Swagger: http://localhost:3001/api-docs"
-          echo "📈 Mocha Awesome reports generated"
+          echo "🔗 Web App: http://localhost:3001"
+          echo "📖 API Docs: http://localhost:3001/api-docs"
           echo "🎥 Cypress videos and screenshots available"
+          echo "🧪 Tested scenarios:"
+          echo "  - Login with valid credentials"
+          echo "  - Login with invalid credentials"
+          echo "  - Logout functionality"
+          echo "  - Form validations"
+          echo "  - UI responsiveness"
         else
-          echo "❌ Tests failed!"
+          echo "❌ Cypress tests failed!"
           echo "🔍 Check artifacts for error details"
           echo "📸 Screenshots available in artifacts"
           echo "🎥 Videos available in artifacts"

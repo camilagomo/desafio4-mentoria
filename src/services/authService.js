@@ -17,7 +17,34 @@ class AuthService {
     this.resetTokens = new Map();
     // Chave secreta para JWT (em produção, usar variável de ambiente)
     this.jwtSecret = 'sua_chave_secreta_jwt_aqui';
-    // Não criar usuário de teste aqui
+    
+    // Inicializar usuários de teste
+    this.initializeTestUsers();
+  }
+
+  /**
+   * Inicializa usuários de teste
+   */
+  async initializeTestUsers() {
+    // Usuário válido
+    const validPassword = await bcrypt.hash('senha123', 10);
+    this.users.set('usuario@valido.com', {
+      email: 'usuario@valido.com',
+      password: validPassword,
+      name: 'Usuário Válido',
+      isLocked: false,
+      createdAt: new Date().toISOString()
+    });
+
+    // Usuário inválido (senha errada)
+    const invalidPassword = await bcrypt.hash('senha_errada', 10);
+    this.users.set('usuario@invalido.com', {
+      email: 'usuario@invalido.com',
+      password: invalidPassword,
+      name: 'Usuário Inválido',
+      isLocked: false,
+      createdAt: new Date().toISOString()
+    });
   }
 
   /**

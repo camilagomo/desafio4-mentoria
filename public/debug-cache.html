@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Cache - Teste Simples</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f0f0f0;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        
+        .status {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            border-left: 4px solid #2196F3;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            margin: 5px;
+            background: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .btn:hover {
+            background: #1976D2;
+        }
+        
+        .btn-red { background: #f44336; }
+        .btn-red:hover { background: #d32f2f; }
+        
+        .btn-green { background: #4CAF50; }
+        .btn-green:hover { background: #388E3C; }
+        
+        .btn-orange { background: #ff9800; }
+        .btn-orange:hover { background: #f57c00; }
+        
+        .log {
+            background: #333;
+            color: #fff;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Debug Cache - Teste Simples</h1>
+        
+        <div class="status">
+            <strong>Status Atual:</strong><br>
+            <div id="statusInfo">Carregando...</div>
+        </div>
+        
+        <div style="text-align: center;">
+            <button class="btn btn-orange" id="clearLocalStorage">
+                🗑️ Limpar localStorage
+            </button>
+            
+            <button class="btn btn-red" id="clearAll">
+                🧹 Limpar Tudo
+            </button>
+            
+            <button class="btn" id="goToLogin">
+                🔐 Ir para Login
+            </button>
+            
+            <button class="btn btn-green" id="goToWelcome">
+                🏠 Ir para Boas-vindas
+            </button>
+        </div>
+        
+        <div class="log" id="log">
+            <div>Log de eventos:</div>
+        </div>
+        
+        <div style="text-align: center; margin-top: 20px;">
+            <button class="btn" id="testClick">
+                🧪 Teste de Clique
+            </button>
+            
+            <button class="btn" id="clearLog">
+                🗑️ Limpar Log
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Função para adicionar logs
+        function addLog(message) {
+            const log = document.getElementById('log');
+            const time = new Date().toLocaleTimeString();
+            log.innerHTML += `<div>[${time}] ${message}</div>`;
+            log.scrollTop = log.scrollHeight;
+            console.log(message);
+        }
+        
+        // Função para limpar log
+        function clearLog() {
+            document.getElementById('log').innerHTML = '<div>Log de eventos:</div>';
+            addLog('Log limpo');
+        }
+        
+        // Função de teste de clique
+        function testClick() {
+            addLog('✅ Botão de teste clicado!');
+            alert('Botão funcionando!');
+        }
+        
+        // Verificar status
+        function checkStatus() {
+            const userData = localStorage.getItem('userData');
+            const userToken = localStorage.getItem('userToken');
+            
+            const status = `
+                localStorage userData: ${userData ? 'Presente' : 'Ausente'}<br>
+                localStorage userToken: ${userToken ? 'Presente' : 'Ausente'}<br>
+                sessionStorage: ${sessionStorage.length} itens<br>
+                cookies: ${document.cookie ? 'Presentes' : 'Ausentes'}
+            `;
+            
+            document.getElementById('statusInfo').innerHTML = status;
+            addLog('Status verificado');
+        }
+        
+        // Função para limpar localStorage
+        function clearLocalStorage() {
+            addLog('🔄 Limpando localStorage...');
+            localStorage.removeItem('userData');
+            localStorage.removeItem('userToken');
+            addLog('✅ localStorage limpo');
+            checkStatus();
+        }
+        
+        // Função para limpar tudo
+        function clearAll() {
+            addLog('🔄 Limpando todos os dados...');
+            localStorage.clear();
+            sessionStorage.clear();
+            addLog('✅ Todos os dados limpos');
+            checkStatus();
+        }
+        
+        // Função para ir para login
+        function goToLogin() {
+            addLog('🔄 Redirecionando para login...');
+            setTimeout(() => {
+                window.location.href = '/';
+            }, 1000);
+        }
+        
+        // Função para ir para boas-vindas
+        function goToWelcome() {
+            addLog('🔄 Redirecionando para boas-vindas...');
+            setTimeout(() => {
+                window.location.href = '/welcome.html';
+            }, 1000);
+        }
+        
+        // Inicializar quando a página carregar
+        document.addEventListener('DOMContentLoaded', function() {
+            addLog('📄 Página carregada');
+            checkStatus();
+            
+            // Adicionar event listeners para todos os botões
+            document.getElementById('testClick').addEventListener('click', function() {
+                addLog('🖱️ Botão de teste clicado');
+                testClick();
+            });
+            
+            document.getElementById('clearLocalStorage').addEventListener('click', function() {
+                addLog('🖱️ Botão limpar localStorage clicado');
+                clearLocalStorage();
+            });
+            
+            document.getElementById('clearAll').addEventListener('click', function() {
+                addLog('🖱️ Botão limpar tudo clicado');
+                clearAll();
+            });
+            
+            document.getElementById('goToLogin').addEventListener('click', function() {
+                addLog('🖱️ Botão ir para login clicado');
+                goToLogin();
+            });
+            
+            document.getElementById('goToWelcome').addEventListener('click', function() {
+                addLog('🖱️ Botão ir para boas-vindas clicado');
+                goToWelcome();
+            });
+            
+            document.getElementById('clearLog').addEventListener('click', function() {
+                addLog('🖱️ Botão limpar log clicado');
+                clearLog();
+            });
+        });
+    </script>
+</body>
+</html> 

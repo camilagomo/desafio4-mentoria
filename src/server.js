@@ -72,6 +72,35 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/index.html'));
 });
 
+// Rota para página de boas-vindas
+app.get('/welcome', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/welcome.html'));
+});
+
+// Rota para testar notificações
+app.get('/test', (req, res) => {
+  console.log('📄 Servindo página de teste de notificações');
+  res.sendFile(path.join(__dirname, '../test-login.html'));
+});
+
+// Rota para página de limpeza de cache
+app.get('/clear-cache', (req, res) => {
+    console.log('🧹 Servindo página de limpeza de cache');
+    res.sendFile(path.join(__dirname, '../public/clear-cache.html'));
+});
+
+// Rota para página de limpeza de cache (versão simples)
+app.get('/simple-clear', (req, res) => {
+    console.log('🧹 Servindo página de limpeza de cache (versão simples)');
+    res.sendFile(path.join(__dirname, '../public/simple-clear-cache.html'));
+});
+
+// Rota para página de debug
+app.get('/debug', (req, res) => {
+    console.log('🔧 Servindo página de debug');
+    res.sendFile(path.join(__dirname, '../public/debug-cache.html'));
+});
+
 // Middleware de tratamento de erros
 app.use((err, req, res, next) => {
   console.error(err.stack);
@@ -93,6 +122,7 @@ app.listen(PORT, () => {
   console.log(`🚀 Servidor rodando na porta ${PORT}`);
   console.log(`📚 Documentação Swagger disponível em: http://localhost:${PORT}/api-docs`);
   console.log(`🏥 Health check disponível em: http://localhost:${PORT}/health`);
+  console.log(`🧪 Teste de notificações em: http://localhost:${PORT}/test`);
 });
 
 module.exports = app; 

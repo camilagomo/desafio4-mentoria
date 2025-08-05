@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Limpar Cache - Versão Simples</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 1rem;
+        }
+        
+        .status {
+            background: #f5f5f5;
+            padding: 1rem;
+            border-radius: 5px;
+            margin: 1rem 0;
+            text-align: left;
+            font-size: 14px;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            margin: 8px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            text-decoration: none;
+            color: white;
+            transition: all 0.3s ease;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .btn-orange { background-color: #ff9800; }
+        .btn-red { background-color: #f44336; }
+        .btn-blue { background-color: #2196F3; }
+        .btn-green { background-color: #4CAF50; }
+        
+        .notification {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            color: white;
+            display: none;
+        }
+        
+        .notification.show {
+            display: block;
+        }
+        
+        .success { background-color: #4CAF50; }
+        .error { background-color: #f44336; }
+        .info { background-color: #2196F3; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧹 Limpar Cache e Dados</h1>
+        
+        <p>Esta página ajuda a limpar dados armazenados que podem estar causando problemas.</p>
+        
+        <div class="status">
+            <strong>Status Atual:</strong><br>
+            <span id="localStorageStatus">Verificando...</span><br>
+            <span id="sessionStorageStatus">Verificando...</span><br>
+            <span id="cookiesStatus">Verificando...</span>
+        </div>
+        
+        <div>
+            <button class="btn btn-orange" onclick="clearLocalStorage()">
+                🗑️ Limpar localStorage
+            </button>
+            
+            <button class="btn btn-red" onclick="clearAllData()">
+                🧹 Limpar Tudo
+            </button>
+            
+            <button class="btn btn-blue" onclick="goToLogin()">
+                🔐 Ir para Login
+            </button>
+            
+            <button class="btn btn-green" onclick="goToWelcome()">
+                🏠 Ir para Boas-vindas
+            </button>
+        </div>
+        
+        <div id="notification" class="notification"></div>
+    </div>
+
+    <script>
+        // Verificar status ao carregar
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Página carregada');
+            checkCurrentStatus();
+        });
+        
+        function checkCurrentStatus() {
+            console.log('Verificando status...');
+            const localStorageData = localStorage.getItem('userData');
+            const localStorageToken = localStorage.getItem('userToken');
+            const sessionStorageData = sessionStorage.getItem('userData');
+            const sessionStorageToken = sessionStorage.getItem('userToken');
+            
+            document.getElementById('localStorageStatus').textContent = 
+                `localStorage: ${localStorageData ? 'Dados encontrados' : 'Vazio'} | Token: ${localStorageToken ? 'Presente' : 'Ausente'}`;
+            
+            document.getElementById('sessionStorageStatus').textContent = 
+                `sessionStorage: ${sessionStorageData ? 'Dados encontrados' : 'Vazio'} | Token: ${sessionStorageToken ? 'Presente' : 'Ausente'}`;
+            
+            document.getElementById('cookiesStatus').textContent = 
+                `Cookies: ${document.cookie ? 'Presentes' : 'Ausentes'}`;
+        }
+        
+        function clearLocalStorage() {
+            console.log('Limpando localStorage...');
+            localStorage.removeItem('userData');
+            localStorage.removeItem('userToken');
+            showNotification('localStorage limpo com sucesso!', 'success');
+            checkCurrentStatus();
+        }
+        
+        function clearAllData() {
+            console.log('Limpando todos os dados...');
+            localStorage.clear();
+            sessionStorage.clear();
+            
+            // Limpar cookies
+            document.cookie.split(";").forEach(function(c) { 
+                document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); 
+            });
+            
+            showNotification('Todos os dados foram limpos com sucesso!', 'success');
+            checkCurrentStatus();
+        }
+        
+        function goToLogin() {
+            console.log('Indo para login...');
+            window.location.href = '/';
+        }
+        
+        function goToWelcome() {
+            console.log('Indo para boas-vindas...');
+            window.location.href = '/welcome.html';
+        }
+        
+        function showNotification(message, type = 'info') {
+            console.log('Notificação:', message, type);
+            const notification = document.getElementById('notification');
+            if (notification) {
+                notification.textContent = message;
+                notification.className = `notification ${type} show`;
+                
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                }, 5000);
+            } else {
+                alert(message);
+            }
+        }
+    </script>
+</body>
+</html> 
